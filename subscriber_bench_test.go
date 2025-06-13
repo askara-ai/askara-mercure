@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"testing"
 
 	"go.uber.org/zap"
@@ -101,7 +100,7 @@ func subBenchSubscriber(b *testing.B, topics, concurrency, matchPct int, testNam
 	}
 	s.SetTopics(ts, nil)
 	defer s.Disconnect()
-	ctx, done := context.WithCancel(context.Background())
+	ctx, done := context.WithCancel(b.Context())
 	defer done()
 	for i := 0; i < 1; i++ {
 		go func() {
@@ -116,8 +115,6 @@ func subBenchSubscriber(b *testing.B, topics, concurrency, matchPct int, testNam
 	}
 	b.SetParallelism(concurrency)
 	b.Run(testName, func(b *testing.B) {
-		var wg sync.WaitGroup
-		wg.Add(concurrency)
 		b.RunParallel(func(pb *testing.PB) {
 			for i := 0; pb.Next(); i++ {
 				if i%100 < matchPct {
@@ -127,7 +124,6 @@ func subBenchSubscriber(b *testing.B, topics, concurrency, matchPct int, testNam
 				}
 			}
 		})
-		wg.Done()
 	})
 }
 
