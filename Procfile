@@ -1,1 +1,1 @@
-web: ADDR=":${MERCURE_PORT}" mercure --jwt-key='${MERCURE_SUBSCRIBER_JWT_KEY}' --debug --allow-anonymous --cors-allowed-origins='*' --publish-allowed-origins='*'
+web: ADDR=":${MERCURE_PORT}" mercure --jwt-key='${MERCURE_SUBSCRIBER_JWT_KEY}' --debug --allow-anonymous --cors-allowed-origins='${MERCURE_CORS_ALLOWED_ORIGINS}' --publish-allowed-origins='${MERCURE_PUBLISH_ALLOWED_ORIGINS}'
