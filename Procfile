@@ -1,1 +1,1 @@
-web: ADDR=":80" mercure --jwt-key="secret" --debug --allow-anonymous
+web: ADDR=":${PORT}" mercure --debug --allow-anonymous
