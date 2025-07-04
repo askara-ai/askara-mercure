@@ -1,1 +1,1 @@
-web: mercure run -X -k ${MERCURE_SUBSCRIBER_JWT_KEY} -c ${MERCURE_CORS_ALLOWED_ORIGINS} -d
+web: ADDR=":${PORT}" mercure --jwt-key='${MERCURE_SUBSCRIBER_JWT_KEY}' --debug --allow-anonymous --cors-allowed-origins='*' --publish-allowed-origins='*'
