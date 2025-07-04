@@ -1,1 +1,1 @@
-web: ADDR=":${PORT}" mercure
+web: ADDR=":${PORT}" mercure run --config Caddyfile
