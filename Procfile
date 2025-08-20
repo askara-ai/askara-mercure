@@ -1,1 +1,1 @@
-web: ./mercure run
+web: ./mercure run --config ${CADDYFILE}
