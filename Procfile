@@ -1,1 +1,1 @@
-web: ./mercure run --config ${CADDYFILE}
+web: ADDR=":${PORT}" mercure --debug="${MERCURE_DEBUG}" --allow-anonymous --jwt-key="${MERCURE_SUBSCRIBER_JWT_KEY}" --cors-allowed-origins="${MERCURE_CORS_ALLOWED_ORIGIN1}" --cors-allowed-origins="${MERCURE_CORS_ALLOWED_ORIGIN2}" --cors-allowed-origins="${MERCURE_CORS_ALLOWED_ORIGIN3}" --publish-allowed-origins="${MERCURE_PUBLISH_ALLOWED_ORIGINS}"  --write-timeout 1800s --heartbeat-interval 20s
