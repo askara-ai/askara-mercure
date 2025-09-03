@@ -1,3 +1,4 @@
+// +scalingo goVersion 1.25.0
 module github.com/dunglas/mercure
 
 go 1.25.0
