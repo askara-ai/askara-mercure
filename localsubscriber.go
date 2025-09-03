@@ -5,7 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 	"go.uber.org/zap"
 )
 
@@ -58,7 +58,6 @@ func (s *LocalSubscriber) Dispatch(u *Update, fromHistory bool) bool {
 
 	select {
 	case s.out <- u:
-
 		return true
 	default:
 		s.handleFullChan()

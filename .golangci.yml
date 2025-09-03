@@ -1,6 +1,10 @@
 version: "2"
 run:
   tests: true
+  build-tags:
+    - nobadger
+    - nomysql
+    - nopgx
 linters:
   default: all
   disable:
@@ -14,6 +18,7 @@ linters:
     - lll
     - mnd
     - musttag
+    - noinlineerr
     - nolintlint
     - nonamedreturns
     - paralleltest

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -33,7 +33,7 @@ func TestLogUpdate(t *testing.T) {
 	t.Parallel()
 
 	sink, logger := newTestLogger(t)
-	defer sink.Reset()
+	t.Cleanup(sink.Reset)
 
 	u := &Update{
 		Topics:  []string{"https://example.com/foo"},

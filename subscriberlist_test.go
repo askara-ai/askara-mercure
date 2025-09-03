@@ -29,7 +29,8 @@ func BenchmarkSubscriberList(b *testing.B) {
 	tss := &TopicSelectorStore{}
 
 	l := NewSubscriberList(100)
-	for i := 0; i < 100; i++ {
+
+	for i := range 100 {
 		s := NewLocalSubscriber("", logger, tss)
 		t := fmt.Sprintf("https://example.com/%d", i%10)
 		s.SetTopics([]string{"https://example.org/foo", t}, []string{"https://example.net/bar", t})
@@ -37,9 +38,7 @@ func BenchmarkSubscriberList(b *testing.B) {
 		l.Add(s)
 	}
 
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		assert.NotEmpty(b, l.MatchAny(&Update{Topics: []string{"https://example.org/foo"}}))
 		assert.Empty(b, l.MatchAny(&Update{Topics: []string{"https://example.org/baz"}}))
 		assert.NotEmpty(b, l.MatchAny(&Update{Topics: []string{"https://example.com/8"}, Private: false}))

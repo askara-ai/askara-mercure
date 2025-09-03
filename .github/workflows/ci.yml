@@ -7,11 +7,13 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v*.*.*
+
+permissions:
+  contents: read
 
 env:
   GOTOOLCHAIN: local
+  GOFLAGS: "-tags=nobadger,nomysql,nopgx"
 
 jobs:
   golangci:
@@ -19,11 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          go-version: "1.25"
           cache-dependency-path: |
             go.sum
             caddy/go.sum
@@ -37,13 +41,15 @@ jobs:
   test:
     strategy:
       matrix:
-        go: ["1.24"]
+        go: ["1.25"]
       fail-fast: false
     name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -62,7 +68,7 @@ jobs:
       - name: Test Caddy module
         working-directory: caddy/
         run: |
-          go test -timeout 1m -race -covermode atomic -tags=nobadger,nomysql,nopgx -coverprofile=profile.cov -coverpkg=github.com/dunglas/mercure ./...
+          go test -timeout 1m -race -covermode atomic -coverprofile=profile.cov -coverpkg=github.com/dunglas/mercure ./...
           sed '1d' profile.cov >> ../profile.cov
 
       - name: Upload coverage results
@@ -73,7 +79,7 @@ jobs:
 
       - name: Start Mercure
         working-directory: caddy/mercure/
-        run: sudo MERCURE_PUBLISHER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' MERCURE_SUBSCRIBER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' go run -tags=nobadger,nomysql,nopgx main.go start --config ../../dev.Caddyfile
+        run: sudo MERCURE_PUBLISHER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' MERCURE_SUBSCRIBER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' go run main.go start --config ../../dev.Caddyfile
 
       - uses: actions/setup-node@v4
         with:

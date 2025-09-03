@@ -1,4 +1,3 @@
-//go:debug rsa1024min=0
 package mercure
 
 import (
@@ -262,7 +261,7 @@ func TestAuthorizeAuthorizationHeaderInvalidSignature(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationHeaderNoContent(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -278,7 +277,7 @@ func TestAuthorizeAuthorizationHeaderNoContent(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationHeader(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -294,7 +293,7 @@ func TestAuthorizeAuthorizationHeader(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationHeaderWithCert(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		if testdata.validForCert != "" {
@@ -312,7 +311,7 @@ func TestAuthorizeAuthorizationHeaderWithCert(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationHeaderNamespaced(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		if testdata.validNamespaced != "" {
@@ -418,7 +417,7 @@ func TestAuthorizeAuthorizationQueryInvalidSignature(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationQueryNoContent(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -436,7 +435,7 @@ func TestAuthorizeAuthorizationQueryNoContent(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationQuery(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -454,7 +453,7 @@ func TestAuthorizeAuthorizationQuery(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationQueryNamespaced(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		if testdata.validNamespaced != "" {
@@ -474,7 +473,7 @@ func TestAuthorizeAuthorizationQueryNamespaced(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationQueryRsaWithCert(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		if testdata.validForCert != "" {
@@ -494,7 +493,7 @@ func TestAuthorizeAuthorizationQueryRsaWithCert(t *testing.T) {
 }
 
 func TestAuthorizeAuthorizationQueryWrongAlgorithm(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for idx, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -513,7 +512,7 @@ func TestAuthorizeAuthorizationQueryWrongAlgorithm(t *testing.T) {
 }
 
 func TestAuthorizeCookieInvalidAlg(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -528,7 +527,7 @@ func TestAuthorizeCookieInvalidAlg(t *testing.T) {
 }
 
 func TestAuthorizeCookieInvalidKey(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -544,7 +543,7 @@ func TestAuthorizeCookieInvalidKey(t *testing.T) {
 }
 
 func TestAuthorizeCookieInvalidSignature(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -560,7 +559,7 @@ func TestAuthorizeCookieInvalidSignature(t *testing.T) {
 }
 
 func TestAuthorizeCookieNoContent(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -576,7 +575,7 @@ func TestAuthorizeCookieNoContent(t *testing.T) {
 }
 
 func TestAuthorizeCookie(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodGet, defaultHubURL, nil)
@@ -592,7 +591,7 @@ func TestAuthorizeCookie(t *testing.T) {
 }
 
 func TestAuthorizeCookieNoOriginNoReferer(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
@@ -611,13 +610,13 @@ func TestAuthorizeCookieOriginNotAllowed(t *testing.T) {
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Origin", "http://example.com")
+		r.Header.Add("Origin", "https://example.com")
 		r.AddCookie(&http.Cookie{Name: defaultCookieName, Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)
 
-		claims, err := authorize(r, keyfunc, []string{"http://example.net"}, defaultCookieName)
-		require.EqualError(t, err, `"http://example.com": origin not allowed to post updates`, testdata.algorithm)
+		claims, err := authorize(r, keyfunc, []string{"https://example.net"}, defaultCookieName)
+		require.EqualError(t, err, `"https://example.com": origin not allowed to post updates`, testdata.algorithm)
 		require.Nil(t, claims, testdata.algorithm)
 	}
 }
@@ -627,13 +626,13 @@ func TestAuthorizeCookieRefererNotAllowed(t *testing.T) {
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Referer", "http://example.com/foo/bar")
+		r.Header.Add("Referer", "https://example.com/foo/bar")
 		r.AddCookie(&http.Cookie{Name: defaultCookieName, Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)
 
-		claims, err := authorize(r, keyfunc, []string{"http://example.net"}, defaultCookieName)
-		require.EqualError(t, err, `"http://example.com": origin not allowed to post updates`, testdata.algorithm)
+		claims, err := authorize(r, keyfunc, []string{"https://example.net"}, defaultCookieName)
+		require.EqualError(t, err, `"https://example.com": origin not allowed to post updates`, testdata.algorithm)
 		require.Nil(t, claims, testdata.algorithm)
 	}
 }
@@ -643,29 +642,29 @@ func TestAuthorizeCookieInvalidReferer(t *testing.T) {
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Referer", "http://192.168.0.%31/")
+		r.Header.Add("Referer", "https://192.168.0.%31/")
 		r.AddCookie(&http.Cookie{Name: defaultCookieName, Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)
 
-		claims, err := authorize(r, keyfunc, []string{"http://example.net"}, defaultCookieName)
-		require.EqualError(t, err, `unable to parse referer: parse "http://192.168.0.%31/": invalid URL escape "%31"`, testdata.algorithm)
+		claims, err := authorize(r, keyfunc, []string{"https://example.net"}, defaultCookieName)
+		require.EqualError(t, err, `unable to parse referer: parse "https://192.168.0.%31/": invalid URL escape "%31"`, testdata.algorithm)
 		require.Nil(t, claims, testdata.algorithm)
 	}
 }
 
 func TestAuthorizeCookieOriginHasPriority(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Origin", "http://example.net")
-		r.Header.Add("Referer", "http://example.com")
+		r.Header.Add("Origin", "https://example.net")
+		r.Header.Add("Referer", "https://example.com")
 		r.AddCookie(&http.Cookie{Name: defaultCookieName, Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)
 
-		claims, err := authorize(r, keyfunc, []string{"http://example.net"}, defaultCookieName)
+		claims, err := authorize(r, keyfunc, []string{"https://example.net"}, defaultCookieName)
 		require.NoError(t, err, testdata.algorithm)
 		assert.Equal(t, []string{"foo", "bar"}, claims.Mercure.Publish)
 		assert.Equal(t, []string{"foo", "baz"}, claims.Mercure.Subscribe)
@@ -673,11 +672,11 @@ func TestAuthorizeCookieOriginHasPriority(t *testing.T) {
 }
 
 func TestAuthorizeAllOriginsAllowed(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Origin", "http://example.com")
+		r.Header.Add("Origin", "https://example.com")
 		r.AddCookie(&http.Cookie{Name: defaultCookieName, Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)
@@ -688,11 +687,11 @@ func TestAuthorizeAllOriginsAllowed(t *testing.T) {
 }
 
 func TestAuthorizeCustomCookieName(t *testing.T) {
-	t.Parallel()
+	t.Setenv("GODEBUG", "rsa1024min=0")
 
 	for _, testdata := range AuthTestData {
 		r, _ := http.NewRequest(http.MethodPost, defaultHubURL, nil)
-		r.Header.Add("Origin", "http://example.com")
+		r.Header.Add("Origin", "https://example.com")
 		r.AddCookie(&http.Cookie{Name: "foo", Value: testdata.valid})
 
 		keyfunc, _ := createJWTKeyfunc([]byte(testdata.publicKey), testdata.algorithm)

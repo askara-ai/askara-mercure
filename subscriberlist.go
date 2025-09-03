@@ -25,7 +25,7 @@ var replacer = strings.NewReplacer(
 
 func NewSubscriberList(size int) *SubscriberList {
 	return &SubscriberList{
-		skipfilter: skipfilter.New(func(s interface{}, filter interface{}) bool {
+		skipfilter: skipfilter.New(func(s any, filter any) bool {
 			return s.(*LocalSubscriber).MatchTopics(decode(filter.(string)))
 		}, size),
 	}
@@ -57,6 +57,7 @@ func decode(f string) (topics []string, private bool) {
 	for _, char := range f {
 		if inEscape {
 			builder.WriteRune(char)
+
 			inEscape = false
 
 			continue
@@ -98,7 +99,7 @@ func (sl *SubscriberList) MatchAny(u *Update) (res []*LocalSubscriber) {
 }
 
 func (sl *SubscriberList) Walk(start uint64, callback func(s *LocalSubscriber) bool) uint64 {
-	return sl.skipfilter.Walk(start, func(val interface{}) bool {
+	return sl.skipfilter.Walk(start, func(val any) bool {
 		return callback(val.(*LocalSubscriber))
 	})
 }

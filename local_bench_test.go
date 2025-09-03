@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -17,11 +19,16 @@ func subBenchLocalTransport(b *testing.B, topics, concurrency, matchPct int, tes
 	b.Helper()
 
 	tr := NewLocalTransport()
-	defer tr.Close()
+
+	b.Cleanup(func() {
+		assert.NoError(b, tr.Close())
+	})
+
 	top := make([]string, topics)
 	tsMatch := make([]string, topics)
+
 	tsNoMatch := make([]string, topics)
-	for i := 0; i < topics; i++ {
+	for i := range topics {
 		tsNoMatch[i] = fmt.Sprintf("/%d/{%d}", rand.Int(), rand.Int()) //nolint:gosec
 		if topics/2 == i {
 			n1 := rand.Int() //nolint:gosec
@@ -33,11 +40,12 @@ func subBenchLocalTransport(b *testing.B, topics, concurrency, matchPct int, tes
 			tsMatch[i] = tsNoMatch[i]
 		}
 	}
+
 	tss := &TopicSelectorStore{}
 	logger := zap.NewNop()
 
 	subscribers := make([]*LocalSubscriber, concurrency)
-	for i := 0; i < concurrency; i++ {
+	for i := range concurrency {
 		s := NewLocalSubscriber("", logger, tss)
 		if i%100 < matchPct {
 			s.SetTopics(tsMatch, nil)
@@ -46,11 +54,13 @@ func subBenchLocalTransport(b *testing.B, topics, concurrency, matchPct int, tes
 		}
 
 		subscribers[i] = s
-		tr.AddSubscriber(s)
+		require.NoError(b, tr.AddSubscriber(s))
 	}
+
 	ctx, done := context.WithCancel(b.Context())
-	defer done()
-	for i := 0; i < concurrency; i++ {
+	b.Cleanup(done)
+
+	for i := range concurrency {
 		go func() {
 			for {
 				select {
@@ -64,11 +74,12 @@ func subBenchLocalTransport(b *testing.B, topics, concurrency, matchPct int, tes
 			}
 		}()
 	}
+
 	b.SetParallelism(concurrency)
 	b.Run(testName, func(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for i := 0; pb.Next(); i++ {
-				tr.Dispatch(&Update{Topics: top})
+				require.NoError(b, tr.Dispatch(&Update{Topics: top}))
 			}
 		})
 	})
@@ -76,7 +87,7 @@ func subBenchLocalTransport(b *testing.B, topics, concurrency, matchPct int, tes
 
 /* --- test.sh ---
 These are example commands that can be used to run subsets of this test for analysis.
-Omission of any environment variable causes the test to enumate a few meaningful options.
+Omission of any environment variable causes the test to enumerate a few meaningful options.
 
 #!/usr/bin/sh
 

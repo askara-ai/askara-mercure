@@ -12,14 +12,14 @@ import (
 const jsonldContext = "https://mercure.rocks/"
 
 type subscription struct {
-	Context     string      `json:"@context,omitempty"`
-	ID          string      `json:"id"`
-	Type        string      `json:"type"`
-	Subscriber  string      `json:"subscriber"`
-	Topic       string      `json:"topic"`
-	Active      bool        `json:"active"`
-	LastEventID string      `json:"lastEventID,omitempty"`
-	Payload     interface{} `json:"payload,omitempty"`
+	Context     string `json:"@context,omitempty"`
+	ID          string `json:"id"`
+	Type        string `json:"type"`
+	Subscriber  string `json:"subscriber"`
+	Topic       string `json:"topic"`
+	Active      bool   `json:"active"`
+	LastEventID string `json:"lastEventID,omitempty"`
+	Payload     any    `json:"payload,omitempty"`
 }
 
 type subscriptionCollection struct {
@@ -39,10 +39,12 @@ const (
 
 func (h *Hub) SubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
 	currentURL := r.URL.RequestURI()
+
 	lastEventID, subscribers, ok := h.initSubscription(currentURL, w, r)
 	if !ok {
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 
 	subscriptionCollection := subscriptionCollection{
@@ -54,6 +56,7 @@ func (h *Hub) SubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
+
 	t, _ := url.QueryUnescape(vars["topic"])
 	for _, subscriber := range subscribers {
 		subscriptionCollection.Subscriptions = append(subscriptionCollection.Subscriptions, subscriber.getSubscriptions(t, "", true)...)
@@ -73,6 +76,7 @@ func (h *Hub) SubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Hub) SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	currentURL := r.URL.RequestURI()
+
 	lastEventID, subscribers, ok := h.initSubscription(currentURL, w, r)
 	if !ok {
 		return
@@ -93,6 +97,7 @@ func (h *Hub) SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			subscription.LastEventID = lastEventID
+
 			j, err := json.MarshalIndent(subscription, "", "  ")
 			if err != nil {
 				panic(err)
@@ -127,15 +132,18 @@ func (h *Hub) initSubscription(currentURL string, w http.ResponseWriter, r *http
 	}
 
 	var err error
+
 	lastEventID, subscribers, err = transport.GetSubscribers()
 	if err != nil {
 		if c := h.logger.Check(zap.ErrorLevel, "Error retrieving subscribers"); c != nil {
 			c.Write(zap.Error(err))
 		}
+
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return lastEventID, subscribers, ok
 	}
+
 	if r.Header.Get("If-None-Match") == lastEventID {
 		w.WriteHeader(http.StatusNotModified)
 

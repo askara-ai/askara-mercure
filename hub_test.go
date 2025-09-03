@@ -49,7 +49,7 @@ func TestNewHubWithConfig(t *testing.T) {
 
 func TestNewHubValidationError(t *testing.T) {
 	assert.Panics(t, func() {
-		NewHubFromViper(viper.New())
+		_, _ = NewHubFromViper(viper.New())
 	})
 }
 
@@ -62,7 +62,7 @@ func TestNewHubTransportValidationError(t *testing.T) {
 	v.Set("transport_url", "foo://")
 
 	assert.Panics(t, func() {
-		NewHubFromViper(viper.New())
+		_, _ = NewHubFromViper(viper.New())
 	})
 }
 
@@ -74,6 +74,7 @@ func TestStartCrash(t *testing.T) {
 
 		return
 	}
+
 	cmd := exec.Command(os.Args[0], "-test.run=TestStartCrash") //nolint:gosec
 	cmd.Env = append(os.Environ(), "BE_START_CRASH=1")
 	err := cmd.Run()
@@ -92,6 +93,7 @@ func TestStop(t *testing.T) {
 
 	go func() {
 		s := hub.transport.(*LocalTransport)
+
 		var ready bool
 
 		for !ready {
@@ -100,26 +102,28 @@ func TestStop(t *testing.T) {
 			s.RUnlock()
 		}
 
-		hub.transport.Dispatch(&Update{
-			Topics: []string{"http://example.com/foo"},
+		_ = hub.transport.Dispatch(&Update{
+			Topics: []string{"https://example.com/foo"},
 			Event:  Event{Data: "Hello World"},
 		})
 
-		hub.Stop()
+		_ = hub.Stop()
 	}()
 
 	var wg sync.WaitGroup
 	wg.Add(numberOfSubscribers)
-	for i := 0; i < numberOfSubscribers; i++ {
+
+	for range numberOfSubscribers {
 		go func() {
 			defer wg.Done()
-			req := httptest.NewRequest(http.MethodGet, defaultHubURL+"?topic=http://example.com/foo", nil)
+
+			req := httptest.NewRequest(http.MethodGet, defaultHubURL+"?topic=https://example.com/foo", nil)
 
 			w := newSubscribeRecorder()
 			hub.SubscribeHandler(w, req)
 
 			r := w.Result()
-			r.Body.Close()
+			_ = r.Body.Close()
 			assert.Equal(t, 200, r.StatusCode)
 		}()
 	}
@@ -177,7 +181,7 @@ func TestWithPublisherJWTKeyFunc(t *testing.T) {
 
 	op := &opt{}
 
-	o := WithPublisherJWTKeyFunc(func(_ *jwt.Token) (interface{}, error) { return []byte{}, nil })
+	o := WithPublisherJWTKeyFunc(func(_ *jwt.Token) (any, error) { return []byte{}, nil })
 	require.NoError(t, o(op))
 	require.NotNil(t, op.publisherJWTKeyFunc)
 }
@@ -187,7 +191,7 @@ func TestWithSubscriberJWTKeyFunc(t *testing.T) {
 
 	op := &opt{}
 
-	o := WithSubscriberJWTKeyFunc(func(_ *jwt.Token) (interface{}, error) { return []byte{}, nil })
+	o := WithSubscriberJWTKeyFunc(func(_ *jwt.Token) (any, error) { return []byte{}, nil })
 	require.NoError(t, o(op))
 	require.NotNil(t, op.subscriberJWTKeyFunc)
 }
@@ -219,8 +223,8 @@ func TestOriginsValidator(t *testing.T) {
 		{"*"},
 		{"null"},
 		{"https://example.com"},
-		{"http://example.com:8000"},
-		{"https://example.com", "http://example.org"},
+		{"https://example.com:8000"},
+		{"https://example.com", "https://example.org"},
 		{"https://example.com", "*"},
 		{"null", "https://example.com:3000"},
 		{"capacitor://"},
@@ -236,7 +240,7 @@ func TestOriginsValidator(t *testing.T) {
 		{"https://example.com/"},
 		{"https://user@example.com"},
 		{"https://example.com:abc"},
-		{"https://example.com", "http://example.org/hello"},
+		{"https://example.com", "https://example.org/hello"},
 		{"https://example.com?query", "*"},
 		{"null", "https://example.com:3000#fragment"},
 	}
@@ -293,10 +297,11 @@ func createDummyAuthorizedJWT(r role, topics []string) string {
 	}{Foo: "bar"})
 }
 
-func createDummyAuthorizedJWTWithPayload(r role, topics []string, payload interface{}) string {
+func createDummyAuthorizedJWTWithPayload(r role, topics []string, payload any) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	var key []byte
+
 	switch r {
 	case rolePublisher:
 		token.Claims = &claims{Mercure: mercureClaim{Publish: topics}, RegisteredClaims: jwt.RegisteredClaims{}}

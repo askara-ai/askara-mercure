@@ -12,8 +12,11 @@ import (
 //
 //nolint:funlen
 func (h *Hub) PublishHandler(w http.ResponseWriter, r *http.Request) {
-	var claims *claims
-	var err error
+	var (
+		claims *claims
+		err    error
+	)
+
 	if h.publisherJWTKeyFunc != nil {
 		claims, err = authorize(r, h.publisherJWTKeyFunc, h.publishOrigins, h.cookieName)
 		if err != nil || claims == nil || claims.Mercure.Publish == nil {
@@ -31,7 +34,7 @@ func (h *Hub) PublishHandler(w http.ResponseWriter, r *http.Request) {
 
 	topics := r.PostForm["topic"]
 	if len(topics) == 0 {
-		http.Error(w, "Missing \"topic\" parameter", http.StatusBadRequest)
+		http.Error(w, `Missing "topic" parameter`, http.StatusBadRequest)
 
 		return
 	}
@@ -54,9 +57,9 @@ func (h *Hub) PublishHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if h.isBackwardCompatiblyEnabledWith(7) {
-			h.logger.Info("Deprecated: posting public updates to topics not listed in the 'mercure.publish' JWT claim is deprecated since the version 7 of the protocol, use '[\"*\"]' as value to allow publishing on all topics.")
+			h.logger.Info(`Deprecated: posting public updates to topics not listed in the "mercure.publish" JWT claim is deprecated since the version 7 of the protocol, use '["*"]' as value to allow publishing on all topics.`)
 		} else {
-			h.logger.Info("Unsupported: posting public updates to topics not listed in the 'mercure.publish' JWT claim is not supported anymore, use '[\"*\"]' as value to allow publishing on all topics or enable backward compatibility with the version 7 of the protocol.")
+			h.logger.Info(`Unsupported: posting public updates to topics not listed in the "mercure.publish" JWT claim is not supported anymore, use '["*"]' as value to allow publishing on all topics or enable backward compatibility with the version 7 of the protocol.`)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 
 			return
@@ -84,5 +87,6 @@ func (h *Hub) PublishHandler(w http.ResponseWriter, r *http.Request) {
 	if c := h.logger.Check(zap.DebugLevel, "Update published"); c != nil {
 		c.Write(zap.Object("update", u), zap.String("remote_addr", r.RemoteAddr))
 	}
+
 	h.metrics.UpdatePublished(u)
 }
