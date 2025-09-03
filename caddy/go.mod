@@ -1,3 +1,4 @@
+// +scalingo goVersion go1.25.0
 module github.com/dunglas/mercure/caddy
 
 go 1.25.0
